@@ -46,7 +46,13 @@ I decide to use Keras as the programming framework training on GTX 1080 Ti on my
 1) proprocess input pictures, standardize resolutions and possibly do some data augmentation to generate more training data
 2) Construct pairs for training the siamese object recognition model. 
 I plan to include all pairs (p1, p2) where p1 and p2 are of the same product. So those training data will be ((p1,p2),1) where 1 denotes they are the same product. I also need negatve pairs and inspired by the VGG deep face paper for every single picture in the training set p1, we randomly sample one picture p2 that is not the same product and denote this training data point as ((p1,p2), 0) where 0 denotes that p1 and p3 are not the same product. In our data set this would generate relatively the same number of positive pairs ((p1,p2),1) as negative pairs ((p1,p2),0). Going through all ((p1,p2),y) is considered as one epoch.  
-3) Pick several well known deep CNN network structure like inceptionV3, freeze some earlier layers' weights since the amount of data we have is too few to train a really deep network. Denote the entire trained CNN network as a function f that transforms pixal values in the first layer to a vector of real values output by the final layer. We take the abosolute difference between f(p1) and f(p2), mulitply it by a learned weight vector w and apply softmax to it to get a probability of whether p1 and p2 are pictures of the same product, i.e. $$Probability(p_1,p_2 \textrm{ are the same product}) = softmax(w|f(p1) - f(p2)|)$$ We consider the probability also as a similarity score between p1 and p2. 
+3) Pick several well known deep CNN network structure like inceptionV3, freeze some earlier layers' weights since the amount of data we have is too few to train a really deep network. Denote the entire trained CNN network as a function f that transforms pixal values in the first layer to a vector of real values output by the final layer. We take the abosolute difference between f(p1) and f(p2), mulitply it by a learned weight vector w and apply softmax to it to get a probability of whether p1 and p2 are pictures of the same product, i.e. 
+
+$$
+Probability(p_1,p_2 \textrm{ are the same product}) = softmax(w|f(p1) - f(p2)|)
+$$ 
+
+We consider the probability also as a similarity score between p1 and p2. 
 4) For each training pair ((p1,p2), y) we calculate the cross entropy loss between the probability and the true label y and minimize this loss function over minibatches. We plan to do early stopping based on accuracy measure on validation set. Accuracy is as defined in Evaluation Metrics. 
 5) Going back to 3), modify and network structure and fine tuning other hyperparameter to try to get better validation accuracy. 
 6) After validation accuracy is good, evaluate accuracy and top-5 accuracy on test set. Accuracy and top-5 accuracy are as defined in Evaluation Metrics. 
